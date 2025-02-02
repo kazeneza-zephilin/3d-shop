@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
 import PropTypes from "prop-types";
-import CustomButton from "./customButton";
+import CustomButton from "./CustomButton";
 
 const AIPicker = ({ prompt, setPrompt, generatingImg, handleSubmit }) => {
     return (
