@@ -58,7 +58,7 @@ const Customizer = () => {
     const handleSubmit = async (type) => {
         if (!prompt) return alert("please enter a prompt");
         const modelName = "black-forest-labs/FLUX.1-dev"; // Hugging Face model name
-        const apiUrl = "http://localhost:8080/api/v1/huggingface"; // The server endpoint for Hugging Face
+        const apiUrl = "https://threed-shop-7xnn.onrender.com/api/v1/huggingface"; // The server endpoint for Hugging Face
 
         // Debugging the request details
         console.log("Sending request to API", {
