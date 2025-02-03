@@ -38,7 +38,7 @@ router.post("/", async (req, res) => {
         res.status(200).json({ photo: base64Image });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Something went wrong" });
+        res.status(500).json({ message: "Something went wrong on server" });
     }
 });
 
