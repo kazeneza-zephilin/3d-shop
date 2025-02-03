@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
             model,
             inputs: prompt,
             parameters: { num_inference_steps: 5 },
-            provider: "fal-ai",
+            provider: "hf-inference",
         });
 
         // Convert the image to base64 string
