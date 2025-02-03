@@ -1,5 +1,5 @@
 # 3D Shirt Try-On
-![Uploading Screen Shot 2025-02-03 at 12.49.42.png…]()
+https://imgur.com/dK9Xe2c
 
 
 **Overview**
