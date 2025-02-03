@@ -1,5 +1,5 @@
 # 3D Shirt Try-On
-![https://imgur.com/dK9Xe2c]()
+
 
 
 **Overview**
