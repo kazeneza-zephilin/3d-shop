@@ -4,7 +4,7 @@
 
 **Overview**
 
-The 3D Shirt Try-On is an interactive web application that allows users to dynamically generate and customize 3D shirts with colors, logos, textures, and AI-generated designs. This project leverages cutting-edge web technologies to deliver a seamless, immersive experience.
+The *3D Shirt Try-On* is an interactive web application that allows users to dynamically generate and customize 3D shirts with colors, logos, textures, and AI-generated designs. This project leverages cutting-edge web technologies to deliver a seamless, immersive experience.
 
  **Features**
 
