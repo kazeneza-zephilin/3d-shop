@@ -1,4 +1,5 @@
 # 3D Shirt Try-On
+![3D Shirt Try-On Screenshot](/client/public/readme-img.png)
 
 **Overview**
 
