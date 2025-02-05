@@ -7,7 +7,7 @@ dotenv.config();
 
 const router = express.Router();
 
-const hfApiKey = process.env.HUGGING_FACE_API_KEY;
+const hfApiKey = process.env.HUGGING_FACE_ACCESS_TOKEN;
 if (!hfApiKey) {
     throw new Error("Hugging Face API Key is required in .env");
 }
