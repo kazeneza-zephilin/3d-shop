@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
         const response = await hfClient.textToImage({
             model,
             inputs: prompt,
-            parameters: { num_inference_steps: 50 },
+            parameters: { num_inference_steps: 5 },
             provider: "hf-inference",
         });
         // Debugging to ensure we're getting the expected data
