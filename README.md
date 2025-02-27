@@ -7,7 +7,7 @@
 
 The *3D Shirt Try-On* is an interactive web application that allows users to dynamically generate and customize 3D shirts with colors, logos, textures, and AI-generated designs. This project leverages cutting-edge web technologies to deliver a seamless, immersive experience.
 
-#### Deployment link: [deployment link ](https://3d-shop-chi.vercel.app/)
+#### Deployment link: [Live preview ](https://3d-shop-chi.vercel.app/)
  **Features**
 
 - ✅ **3D Swag Generation** - Create unique 3D shirt designs dynamically.
