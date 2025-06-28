@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { memo } from "react";
 import PropTypes from "prop-types";
 import { useSnapshot } from "valtio";
 import state from "../store";
 
-const Tab = ({ tab, isFilterTab, isActiveTab, handleClick }) => {
+const Tab = memo(({ tab, isFilterTab, isActiveTab, handleClick }) => {
     const snap = useSnapshot(state);
     const activeStyles =
         isFilterTab && isActiveTab
@@ -33,7 +33,9 @@ const Tab = ({ tab, isFilterTab, isActiveTab, handleClick }) => {
             />
         </div>
     );
-};
+});
+
+Tab.displayName = "Tab";
 
 Tab.propTypes = {
     tab: PropTypes.shape({

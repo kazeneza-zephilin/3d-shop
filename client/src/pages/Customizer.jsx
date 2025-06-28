@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSnapshot } from "valtio";
 
@@ -29,8 +29,120 @@ const Customizer = () => {
         logoShirt: true,
         stylishShirt: false,
     });
+
+    // Memoize the API URL to prevent unnecessary re-computations
+    const apiUrl = useMemo(
+        () => "http://localhost:8080/api/v1/huggingface",
+        []
+    );
+    const modelName = useMemo(() => "black-forest-labs/FLUX.1-dev", []);
+
+    const handleDecals = useCallback(
+        (type, result) => {
+            const decalType = DecalTypes[type];
+            state[decalType.stateProperty] = result;
+            if (!activeFilterTab[decalType.filterTab]) {
+                setActiveFilterTab((prevState) => ({
+                    ...prevState,
+                    [decalType.filterTab]: !prevState[decalType.filterTab],
+                }));
+            }
+        },
+        [activeFilterTab]
+    );
+
+    const handleActiveFilterTab = useCallback(
+        (tabName) => {
+            switch (tabName) {
+                case "logoShirt":
+                    state.isLogoTexture = !activeFilterTab[tabName];
+                    break;
+                case "stylishShirt":
+                    state.isFullTexture = !activeFilterTab[tabName];
+                    break;
+                default:
+                    state.isLogoTexture = true;
+                    state.isFullTexture = false;
+            }
+            setActiveFilterTab((prevState) => ({
+                ...prevState,
+                [tabName]: !prevState[tabName],
+            }));
+        },
+        [activeFilterTab]
+    );
+
+    // Memoize callbacks to prevent unnecessary re-renders
+    const handleSubmit = useCallback(
+        async (type) => {
+            if (!prompt.trim()) {
+                alert("Please enter a prompt");
+                return;
+            }
+
+            console.log("Sending request to API", {
+                prompt,
+                model: modelName,
+            });
+
+            try {
+                setGeneratingImg(true);
+
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt.trim(),
+                        model: modelName,
+                    }),
+                });
+
+                const data = await response.json();
+                console.log("Response data:", data);
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || `HTTP error! status: ${response.status}`
+                    );
+                }
+
+                if (data.success && data.photo) {
+                    handleDecals(type, data.photo);
+                    console.log(
+                        `Image generated successfully in ${data.metadata?.processingTime}ms`
+                    );
+                } else {
+                    throw new Error(data.message || "Failed to generate image");
+                }
+            } catch (error) {
+                console.error("AI Generation Error:", error);
+                alert(`Error generating image: ${error.message}`);
+            } finally {
+                setGeneratingImg(false);
+                setActiveEditorTab("");
+            }
+        },
+        [prompt, modelName, apiUrl, handleDecals]
+    );
+
+    const readFile = useCallback(
+        (type) => {
+            reader(file).then((result) => {
+                handleDecals(type, result);
+                setActiveEditorTab("");
+            });
+        },
+        [file, handleDecals]
+    );
+
+    const handleGoBack = useCallback(() => {
+        state.intro = true;
+    }, []);
+
     //showing tab content depending on active tab
-    const generateTabContent = () => {
+    const generateTabContent = useCallback(() => {
         switch (activeEditorTab) {
             case "colorpicker":
                 return <ColorPicker />;
@@ -54,83 +166,7 @@ const Customizer = () => {
             default:
                 return null;
         }
-    };
-    const handleSubmit = async (type) => {
-        if (!prompt) return alert("please enter a prompt");
-        const modelName = "black-forest-labs/FLUX.1-dev"; // Hugging Face model name
-        const apiUrl = "https://threed-shop-7xnn.onrender.com/api/v1/huggingface"; // The server endpoint for Hugging Face
-
-        // Debugging the request details
-        console.log("Sending request to API", {
-            prompt,
-            model: modelName,
-        });
-
-        try {
-            setGeneratingImg(true);
-
-            const response = await fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    prompt,
-                    model: modelName,
-                }),
-            });
-            // Log response status and body
-            console.log("Response status:", response.status);
-            const data = await response.json();
-            console.log("Response data:", data);
-
-            if (data.photo) {
-                handleDecals(type, `data:image/png;base64,${data.photo}`);
-            } else {
-                console.log("error generating image.");
-            }
-        } catch (error) {
-            alert(error);
-        } finally {
-            setGeneratingImg(false);
-            setActiveEditorTab("");
-        }
-    };
-    const handleDecals = (type, result) => {
-        const decalType = DecalTypes[type];
-
-        state[decalType.stateProperty] = result;
-        if (!activeFilterTab[decalType.filterTab]) {
-            handleActiveFilterTab(decalType.filterTab);
-        }
-    };
-    const handleActiveFilterTab = (tabName) => {
-        switch (tabName) {
-            case "logoShirt":
-                state.isLogoTexture = !activeFilterTab[tabName];
-                break;
-
-            case "stylishShirt":
-                state.isFullTexture = !activeFilterTab[tabName];
-                break;
-
-            default:
-                state.isLogoTexture = true;
-                state.isFullTexture = false;
-        }
-        setActiveFilterTab((prevState) => {
-            return {
-                ...prevState,
-                [tabName]: !prevState[tabName],
-            };
-        });
-    };
-    const readFile = (type) => {
-        reader(file).then((result) => {
-            handleDecals(type, result);
-            setActiveEditorTab("");
-        });
-    };
+    }, [activeEditorTab, file, prompt, generatingImg, handleSubmit, readFile]);
     return (
         <AnimatePresence>
             {!snap.intro && (
