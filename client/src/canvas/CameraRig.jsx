@@ -10,7 +10,7 @@ import state from "../store";
 const CameraRig = ({ children }) => {
     const group = useRef();
     const snap = useSnapshot(state);
-    
+
     useFrame((state, delta) => {
         const isBreakPoint = window.innerWidth <= 1260;
         const isMobile = window.innerWidth <= 600;
@@ -26,23 +26,23 @@ const CameraRig = ({ children }) => {
         }
         //set the model camera position
         easing.damp3(state.camera.position, targetPosition, 0.25, delta);
-        
+
         //set the model to rotate smoothly
         if (snap.intro) {
-            // In intro mode, follow mouse pointer
+            // In intro mode (homepage), add automatic rotation to showcase
+            group.current.rotation.y += delta * 0.8; // Auto-rotate on Y axis
+            // Add subtle mouse interaction for X axis
             easing.dampE(
                 group.current.rotation,
-                [state.pointer.y / 10, -state.pointer.x / 5, 0],
+                [state.pointer.y / 10, group.current.rotation.y, 0],
                 0.25,
                 delta
             );
         } else {
-            // In customizer mode, add automatic rotation
-            group.current.rotation.y += delta * 0.5; // Auto-rotate on Y axis
-            // Still allow some mouse interaction for X axis
+            // In customizer mode, follow mouse pointer only
             easing.dampE(
                 group.current.rotation,
-                [state.pointer.y / 10, group.current.rotation.y, 0],
+                [state.pointer.y / 10, -state.pointer.x / 5, 0],
                 0.25,
                 delta
             );
