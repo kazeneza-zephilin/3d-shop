@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import CustomButton from "./CustomButton";
 import { validateImageFile, compressImage } from "../config/imageUtils";
 
-const FIlePicker = ({ file, setFile, readFile, showError }) => {
+const FIlePicker = ({ file, setFile, readFile }) => {
     const handleFileChange = useCallback(
         async (e) => {
             const selectedFile = e.target.files[0];
@@ -24,15 +24,11 @@ const FIlePicker = ({ file, setFile, readFile, showError }) => {
                     setFile(selectedFile);
                 }
             } catch (error) {
-                if (showError) {
-                    showError(error.message, "upload");
-                } else {
-                    console.error("File upload error:", error.message);
-                }
+                alert(error.message);
                 e.target.value = ""; // Reset input
             }
         },
-        [setFile, showError]
+        [setFile]
     );
 
     return (
@@ -80,12 +76,10 @@ const FIlePicker = ({ file, setFile, readFile, showError }) => {
         </div>
     );
 };
-
 FIlePicker.propTypes = {
     file: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     setFile: PropTypes.func.isRequired,
     readFile: PropTypes.func.isRequired,
-    showError: PropTypes.func,
 };
 
 export default FIlePicker;

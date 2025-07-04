@@ -15,13 +15,10 @@ import {
     CustomButton,
     FIlePicker,
     Tab,
-    ErrorHandler,
 } from "../components";
-import { useErrorHandler } from "../hooks/useErrorHandler";
 
 const Customizer = () => {
     const snap = useSnapshot(state);
-    const { error, showError, clearError } = useErrorHandler();
 
     const [file, setFile] = useState("");
     const [prompt, setPrompt] = useState("");
@@ -79,7 +76,7 @@ const Customizer = () => {
     const handleSubmit = useCallback(
         async (type) => {
             if (!prompt.trim()) {
-                showError("Please enter a prompt", "validation");
+                alert("Please enter a prompt");
                 return;
             }
 
@@ -106,24 +103,9 @@ const Customizer = () => {
                 console.log("Response data:", data);
 
                 if (!response.ok) {
-                    // Handle specific error types
-                    if (response.status === 429) {
-                        showError(
-                            data.message || "API rate limit exceeded. Please try again later.",
-                            "api_limit"
-                        );
-                    } else if (response.status >= 500) {
-                        showError(
-                            data.message || "Server error. Please try again later.",
-                            "network"
-                        );
-                    } else {
-                        showError(
-                            data.message || `HTTP error! status: ${response.status}`,
-                            "generation"
-                        );
-                    }
-                    return;
+                    throw new Error(
+                        data.message || `HTTP error! status: ${response.status}`
+                    );
                 }
 
                 if (data.success && data.photo) {
@@ -132,26 +114,17 @@ const Customizer = () => {
                         `Image generated successfully in ${data.metadata?.processingTime}ms`
                     );
                 } else {
-                    showError(data.message || "Failed to generate image", "generation");
+                    throw new Error(data.message || "Failed to generate image");
                 }
             } catch (error) {
                 console.error("AI Generation Error:", error);
-                
-                // Handle network errors
-                if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    showError(
-                        "Network error. Please check your connection and try again.",
-                        "network"
-                    );
-                } else {
-                    showError(`Error generating image: ${error.message}`, "generation");
-                }
+                alert(`Error generating image: ${error.message}`);
             } finally {
                 setGeneratingImg(false);
                 setActiveEditorTab("");
             }
         },
-        [prompt, modelName, apiUrl, handleDecals, showError]
+        [prompt, modelName, apiUrl, handleDecals]
     );
 
     const readFile = useCallback(
@@ -179,7 +152,6 @@ const Customizer = () => {
                         file={file}
                         setFile={setFile}
                         readFile={readFile}
-                        showError={showError}
                     />
                 );
             case "aipicker":
@@ -194,8 +166,7 @@ const Customizer = () => {
             default:
                 return null;
         }
-    }, [activeEditorTab, file, prompt, generatingImg, handleSubmit, readFile, showError]);
-
+    }, [activeEditorTab, file, prompt, generatingImg, handleSubmit, readFile]);
     return (
         <AnimatePresence>
             {!snap.intro && (
@@ -257,12 +228,6 @@ const Customizer = () => {
                             />
                         </button>
                     </motion.div>
-                    
-                    {/* Error Handler */}
-                    <ErrorHandler 
-                        error={error} 
-                        onClose={clearError} 
-                    />
                 </>
             )}
         </AnimatePresence>

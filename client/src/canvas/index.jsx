@@ -6,7 +6,6 @@ import { Suspense } from "react";
 
 import CameraRig from "./CameraRig";
 import Shirt from "./Shirt";
-import PerformanceMonitor from "../components/PerformanceMonitor";
 
 const CanvasLoader = () => (
     <Html center>
@@ -17,8 +16,6 @@ const CanvasLoader = () => (
 );
 
 const CanvasModel = () => {
-    const showPerformanceStats = import.meta.env.DEV;
-
     return (
         <Canvas
             shadows
@@ -58,7 +55,6 @@ const CanvasModel = () => {
                         <Shirt />
                     </Center>
                 </CameraRig>
-                <PerformanceMonitor showStats={showPerformanceStats} />
                 <Preload all />
             </Suspense>
         </Canvas>
